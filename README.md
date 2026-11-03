@@ -10,6 +10,13 @@ copied from the "Harbor Kim Portfolio" Magic Patterns design.
 | `utrada/` | UTrada | to do |
 | `eto-markets/` | ETO Markets | to do |
 
+## Online address (GitHub Pages)
+
+- Trust Bank: https://harbor-k.github.io/landing_page/trust-bank/
+
+Every push to `main` rebuilds the pages (`.github/workflows/deploy-pages.yml`).
+One-time setup: repo **Settings → Pages → Source: GitHub Actions**.
+
 ## Run a project on your computer
 
 ```bash
