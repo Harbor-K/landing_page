@@ -9,7 +9,7 @@ import { AffinityScroll } from './AffinityScroll';
  * Text is real text; dense visuals (boards, diagrams, phone screens, photos) are Figma exports
  * hosted in Harbor-K/harbor-pf/assets/trust-bank.
  * Top bar: CaseNav — the home page's boxed tray style with Back / next project.
- * Hero: Harbor's motion piece with sound (SoundMotion: play/pause, progress, volume at 50%; controls hide after 3s, show on hover). Process + journey map: her motion pieces (her GIFs, converted to silent looping MP4s for size).
+ * Hero: Harbor's motion piece with sound (SoundMotion: play/pause, progress, volume; always starts muted; controls hide after 3s, show on hover). Process + journey map: her motion pieces (her GIFs, converted to silent looping MP4s for size).
  * Overview follows Figma "Section / Overview" (node 1026:2000): Problem, Solution, Impact (23/30 · 85 · 6/6).
  * Magnifier (hover zoom) only on the thematic-analysis board and the DVF assumption map (data-zoom).
  * Define: affinity board is live elements; on scroll the notes regroup into the 3 patterns (AffinityScroll).
@@ -122,15 +122,13 @@ const fmt = (t: number) => {
 };
 
 /**
- * Hero motion with its sound effects, volume fixed to start at 50%.
+ * Hero motion with its sound effects. Always starts muted (Harbor's request); the speaker button turns sound on at 50%.
  * Controls (play/pause, progress bar, volume) show for the first 3 seconds, then hide; hovering the video brings them back.
- * Browsers only allow sound after the visitor has interacted with the site, so it tries sound first
- * (works when they came from the home page via "View case"), otherwise it starts muted and the speaker turns sound on.
  */
 function SoundMotion({ src, poster, ratio, label, className = '', bg }: { src: string; poster: string; ratio: string; label: string; className?: string; bg: string }) {
   const ref = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
-  const [muted, setMuted] = useState(false);
+  const [muted, setMuted] = useState(true);
   const [volume, setVolume] = useState(0.5);
   const [time, setTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -143,12 +141,8 @@ function SoundMotion({ src, poster, ratio, label, className = '', bg }: { src: s
     const v = ref.current;
     if (!v) return;
     v.volume = 0.5;
-    v.muted = false;
-    v.play().catch(() => {
-      v.muted = true;
-      setMuted(true);
-      v.play().catch(() => {});
-    });
+    v.muted = true; // always start with sound off
+    v.play().catch(() => {});
     const t = window.setTimeout(() => setIntro(false), 3000);
     return () => window.clearTimeout(t);
   }, []);
@@ -199,6 +193,7 @@ function SoundMotion({ src, poster, ratio, label, className = '', bg }: { src: s
         className="block w-full h-full object-cover cursor-pointer"
         src={src}
         poster={poster}
+        muted
         loop
         playsInline
         preload="auto"
@@ -319,7 +314,7 @@ function HeroSection() {
           Trust Bank (Singapore) · UX case study
         </Body>
 
-        {/* hero motion: 1440x720, silent loop */}
+        {/* hero motion: 1440x720, starts muted */}
         <SoundMotion
           src={IMG.heroVideo}
           poster={IMG.heroPoster}
