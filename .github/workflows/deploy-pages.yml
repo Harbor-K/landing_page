@@ -18,7 +18,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  PROJECTS: "trust-bank"
+  PROJECTS: "trust-bank about-me"
 
 jobs:
   build:

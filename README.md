@@ -6,6 +6,7 @@ copied from the "Harbor Kim Portfolio" Magic Patterns design.
 | Folder | Project | Status |
 | --- | --- | --- |
 | `trust-bank/` | Trust Bank (Singapore) — rewards UX case study | done |
+| `about-me/` | About me — film-strip intro, career timeline, week chart, drawings, book a call | done |
 | `gamecove/` | GameCove | to do |
 | `utrada/` | UTrada | to do |
 | `eto-markets/` | ETO Markets | to do |
@@ -13,6 +14,7 @@ copied from the "Harbor Kim Portfolio" Magic Patterns design.
 ## Online address (GitHub Pages)
 
 - Trust Bank: https://harbor-k.github.io/landing_page/trust-bank/
+- About me: https://harbor-k.github.io/landing_page/about-me/
 
 Every push to `main` rebuilds the pages (`.github/workflows/deploy-pages.yml`).
 One-time setup: repo **Settings → Pages → Source: GitHub Actions**.
