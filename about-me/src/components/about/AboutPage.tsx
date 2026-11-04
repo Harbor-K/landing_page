@@ -20,8 +20,8 @@ const PAPER = '#ECEBE8';
 const YELLOW = '#FFE600';
 
 const PANELS = [
-  { cap: 'I started in Fine Art, drawing what I saw.', say: 'What makes people look twice?', img: 'https://raw.githubusercontent.com/Harbor-K/harbor-pf/main/assets/portrait/harbor-portrait-bw.webp', pos: '50% 30%', side: 'right' },
-  { cap: 'Then I lived and worked in Korea, Australia and the UK.', say: 'Same app, three ways to read it.', img: 'https://raw.githubusercontent.com/Harbor-K/harbor-pf/main/assets/main-v2/about-photo.webp', pos: '50% 40%', side: 'left' },
+  { cap: 'I started in Fine Art, drawing what I saw.', say: 'What makes people look twice?', img: 'https://raw.githubusercontent.com/Harbor-K/harbor-pf/main/assets/about/film-fineart.jpg', pos: '50% 45%', side: 'right' },
+  { cap: 'Then I lived and worked in Korea, Australia and the UK.', say: 'Same app, three ways to read it.', img: 'https://raw.githubusercontent.com/Harbor-K/harbor-pf/main/assets/about/film-places.jpg', pos: '50% 50%', side: 'left' },
   { cap: 'Now I design fintech products, end to end.', say: 'Is the v2 flow ready for handoff?', img: 'https://raw.githubusercontent.com/Harbor-K/harbor-pf/main/assets/trust-bank/workshop-1.jpg', pos: '50% 50%', side: 'right' },
   { cap: 'I test everything with real people.', say: 'Where do I check my points?', img: 'https://raw.githubusercontent.com/Harbor-K/harbor-pf/main/assets/trust-bank/ut-session.png', pos: '50% 50%', side: 'left' },
   { cap: 'And I take long walks to think.', say: 'Butter helps me focus. I swear.', img: 'https://raw.githubusercontent.com/Harbor-K/harbor-pf/main/assets/trust-bank/takeaway.jpg', pos: '55% 40%', side: 'right' },
