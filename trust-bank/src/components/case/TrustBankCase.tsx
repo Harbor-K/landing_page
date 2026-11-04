@@ -61,8 +61,11 @@ const IMG = {
   deliver3: A + 'deliver-3.mp4',
   deliver3Poster: A + 'deliver-3-poster.jpg',
   ut: A + 'ut-session.png',
-  fix1: A + 'fix1.png',
-  fix34: A + 'fix34.png',
+  // Fix screens from Figma "Sub-block_1" (What we changed after testing), one phone each so they can swap on scroll
+  fix1Before: L + 'fix1-asis.webp',
+  fix1After: L + 'fix1-tobe.webp',
+  fix34Before: L + 'fix34-asis.webp',
+  fix34After: L + 'fix34-tobe.webp',
   reflection: A + 'takeaway.jpg',
 };
 
@@ -1032,13 +1035,22 @@ function DeliverSection() {
   );
 }
 
+/**
+ * One fix, told the Corgi way: the phone sits in a panel that stays put while you scroll past it.
+ * The first half of the scroll shows the As-is screen, the second half swaps it for To-be
+ * (the As-is / To-be pill and the panel tint follow). Text sits beside the phone:
+ * kicker, title and body at the top, the test number at the bottom.
+ * Small screens: no pinning, both phones side by side under the text.
+ */
 function FixBlock({
   kicker,
   title,
   body,
   stat,
   statLabel,
-  img,
+  statNote,
+  before,
+  after,
   alt,
 }: {
   kicker: string;
@@ -1046,26 +1058,125 @@ function FixBlock({
   body: string;
   stat: string;
   statLabel: string;
-  img: string;
+  statNote: string;
+  before: string;
+  after: string;
   alt: string;
 }) {
+  const runway = useRef<HTMLDivElement>(null);
+  const [toBe, setToBe] = useState(false);
+  useEffect(() => {
+    const el = runway.current;
+    if (!el) return;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const r = el.getBoundingClientRect();
+      const span = Math.max(1, r.height - window.innerHeight);
+      const p = Math.min(1, Math.max(0, -r.top / span));
+      setToBe(p >= 0.5);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, []);
+
+  const textTop = (
+    <div>
+      <p className="text-[17px] leading-[1.4]" style={{ color: INK }}>
+        {kicker}
+      </p>
+      <p className="mt-[6px] text-[23px] leading-[1.2] font-bold text-[#333]">{title}</p>
+      <Body className="mt-6" color="#333">
+        {body}
+      </Body>
+    </div>
+  );
+  const textBottom = (
+    <div>
+      <p className="text-[52px] leading-[1.1] font-bold text-[#333]">{stat}</p>
+      <p className="mt-[16px] text-[18px] leading-[29px] text-[#333]">{statLabel}</p>
+      <p className="mt-1 text-[17px] leading-[24px] text-[#8e8e95]">{statNote}</p>
+    </div>
+  );
+  const pill = (
+    <div className="inline-flex rounded-full bg-white/80 p-1 text-[16px] font-medium backdrop-blur" aria-hidden="true">
+      {['As-is', 'To-be'].map((l, i) => {
+        const on = (i === 1) === toBe;
+        return (
+          <span
+            key={l}
+            className="rounded-full px-4 py-[6px] transition-colors duration-300"
+            style={{ background: on ? INK : 'transparent', color: on ? '#fff' : '#8e8e95' }}
+          >
+            {l}
+          </span>
+        );
+      })}
+    </div>
+  );
+
   return (
-    <div className="max-w-[1255px]">
-      <div className="grid grid-cols-1 md:grid-cols-[700px_1fr] gap-6 md:gap-10">
-        <div style={{ fontFamily: HELV }}>
-          <p className="text-[17px] leading-[1.4]" style={{ color: INK }}>
-            {kicker}
-          </p>
-          <p className="mt-[6px] text-[23px] leading-[1.2] font-bold text-[#333]">{title}</p>
-          <Body className="mt-10">{body}</Body>
-        </div>
-        <div style={{ fontFamily: HELV }} className="md:pt-[30px]">
-          <p className="text-[52px] leading-[1.1] font-bold text-[#333]">{stat}</p>
-          <p className="mt-[20px] text-[18px] leading-[29px] text-[#333]">{statLabel}</p>
+    <div style={{ fontFamily: HELV }}>
+      {/* md and up: pinned panel, As-is then To-be */}
+      <div ref={runway} className="relative hidden md:block" style={{ height: '200vh' }}>
+        <div className="sticky top-0 flex h-screen items-center">
+          <div className="grid w-full max-w-[1255px] grid-cols-[minmax(0,640px)_minmax(0,1fr)] gap-10 lg:gap-[100px]">
+            <div
+              className="relative flex items-end justify-center overflow-hidden rounded-[20px] transition-colors duration-500"
+              style={{ height: 'clamp(520px, 76vh, 680px)', background: toBe ? '#e3f3fa' : '#f2f2f4' }}
+            >
+              <div className="absolute left-5 top-5 z-10">{pill}</div>
+              <div className="relative h-[calc(100%-96px)] mb-0 translate-y-[24px]" style={{ aspectRatio: '600 / 1230' }}>
+                <img
+                  src={before}
+                  alt={`${alt} — as-is`}
+                  className="absolute inset-0 h-full w-full object-contain transition-opacity duration-500"
+                  style={{ opacity: toBe ? 0 : 1 }}
+                  loading="lazy"
+                  decoding="async"
+                />
+                <img
+                  src={after}
+                  alt={`${alt} — to-be`}
+                  className="absolute inset-0 h-full w-full object-contain transition-opacity duration-500"
+                  style={{ opacity: toBe ? 1 : 0 }}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+            <div className="flex flex-col justify-between py-2" style={{ height: 'clamp(520px, 76vh, 680px)' }}>
+              {textTop}
+              {textBottom}
+            </div>
+          </div>
         </div>
       </div>
-      <div className="mt-10 max-w-[640px]">
-        <Img src={img} alt={alt} />
+
+      {/* small screens: text, then both phones */}
+      <div className="md:hidden">
+        {textTop}
+        <div className="mt-8 grid grid-cols-2 gap-4">
+          {[
+            ['As-is', before],
+            ['To-be', after],
+          ].map(([l, src]) => (
+            <figure key={l} className="rounded-[16px] bg-[#f2f2f4] px-3 pt-4">
+              <figcaption className="text-center text-[16px] font-medium text-[#333]">{l}</figcaption>
+              <img src={src} alt={`${alt} — ${l.toLowerCase()}`} className="mt-3 w-full" loading="lazy" decoding="async" />
+            </figure>
+          ))}
+        </div>
+        <div className="mt-8">{textBottom}</div>
       </div>
     </div>
   );
@@ -1157,9 +1268,9 @@ function TestSection() {
             re-tested yet.
           </Body>
 
-          <div className="mt-[100px]">
+          <div className="mt-[60px] md:mt-0">
             <FixBlock
-              kicker="Fix 1 · Show what each milestone unlocks"
+              kicker="Fix 1 · Points journey"
               title={
                 <>
                   Users saw their points,
@@ -1167,16 +1278,18 @@ function TestSection() {
                   but not what they were for
                 </>
               }
-              body="Each milestone now shows the reward it unlocks. Users know why to keep collecting, so they have a reason to keep using the app."
-              stat="33%"
+              body="The points bar now shows each reward on the way. Now 300 points has a clear goal."
+              stat="2/6"
               statLabel="checked their points without help"
-              img={IMG.fix1}
-              alt="Fix 1 as-is vs to-be: the points bar now shows what each milestone unlocks"
+              statNote="2 users asked what 300 points were for."
+              before={IMG.fix1Before}
+              after={IMG.fix1After}
+              alt="Fix 1, LinkPoints screen"
             />
           </div>
-          <div className="mt-[120px]">
+          <div className="mt-[100px] md:mt-0">
             <FixBlock
-              kicker="Fix 3 + 4 · Every reward one tap away"
+              kicker="Fix 3 + 4 · Rewards hub"
               title={
                 <>
                   Rewards were there,
@@ -1184,11 +1297,13 @@ function TestSection() {
                   but hard to spot
                 </>
               }
-              body="Trust+ moved to the top, so the premium level is seen first. Coupons and stamps got their own sections with See All, so no reward is hidden."
-              stat="50%"
+              body="Coupons and stamps got their own sections with See All. Trust+ moved to the top."
+              stat="3/6"
               statLabel="needed a hint to find a reward"
-              img={IMG.fix34}
-              alt="Fix 3 + 4 as-is vs to-be: Trust+ on top, coupons and stamps with See All"
+              statNote="IT users rated ease of use 73. General users rated it 91."
+              before={IMG.fix34Before}
+              after={IMG.fix34After}
+              alt="Fix 3 + 4, Rewards screen"
             />
           </div>
         </div>
