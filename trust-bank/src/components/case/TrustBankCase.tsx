@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CaseNav } from './CaseNav';
-import { ASSETS } from '../../data/content';
+import { CaseHeader, NextProjectCard } from './CaseChrome';
+import { PROJECT_URLS } from '../../site';
 import { AffinityScroll } from './AffinityScroll';
 
 /**
@@ -8,7 +8,7 @@ import { AffinityScroll } from './AffinityScroll';
  * Layout follows the 1920 frame: a 1440px content column, 700 / 40 / 700 two-column rows.
  * Text is real text; dense visuals (boards, diagrams, phone screens, photos) are Figma exports
  * hosted in Harbor-K/harbor-pf/assets/trust-bank.
- * Top bar: CaseNav — the home page's boxed tray style with Back / next project.
+ * Header and footer: same as the UX Case Study Page — floating × · Next GameCove bar, and a GameCove next-project card at the end (CaseChrome).
  * Hero: Harbor's motion piece with sound (SoundMotion: play/pause, progress, volume; always starts muted; controls hide after 3s, show on hover). Process + journey map: her motion pieces (her GIFs, converted to silent looping MP4s for size).
  * Overview follows Figma "Section / Overview" (node 1026:2000): Problem, Solution, Impact (23/30 · 85 · 6/6).
  * Magnifier (hover zoom) only on the thematic-analysis board and the DVF assumption map (data-zoom).
@@ -815,6 +815,7 @@ const FEATURES = [
     v: IMG.deliver1,
     poster: IMG.deliver1Poster,
     label: 'Lock-screen coupon alert, one tap adds the Kopitiam coupon to the Trust card',
+    caption: 'Alert near a store',
   },
   {
     t: 'One rewards hub',
@@ -822,6 +823,7 @@ const FEATURES = [
     v: IMG.deliver2,
     poster: IMG.deliver2Poster,
     label: 'Adding the LinkPoints widget, then the Rewards page with points, quests, coupons, stamps and Trust+ on one screen',
+    caption: 'Rewards hub',
   },
   {
     t: 'Points you can see grow',
@@ -829,6 +831,7 @@ const FEATURES = [
     v: IMG.deliver3,
     poster: IMG.deliver3Poster,
     label: 'Linking FairPrice in one tap and earning 50 points',
+    caption: 'Points bar',
   },
 ];
 
@@ -836,6 +839,7 @@ const FEATURES = [
  * Deliver: 3 feature cards on the left, the phone plays that feature's screen recording on the right.
  * The active card's bar fills as its video plays; when it ends the next feature starts (3 → 1 loops).
  * The block is pinned while you scroll through it, and scrolling also moves 1 → 2 → 3.
+ * Sizes from Figma "Section / Deliver": cards 620 wide (20 apart, title 22, body 16), 180 gap, phone 360 wide with a caption under it.
  */
 function DeliverShowcase() {
   const outer = useRef<HTMLDivElement>(null);
@@ -886,7 +890,10 @@ function DeliverShowcase() {
 
   return (
     <div ref={outer} className="relative mt-[60px] lg:h-[280vh]">
-      <div className="lg:sticky lg:top-[calc(50vh-430px)] grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-[60px] items-center" style={{ fontFamily: HELV }}>
+      <div
+        className="lg:sticky lg:top-[max(20px,calc(50vh-400px))] grid grid-cols-1 lg:grid-cols-[minmax(0,620px)_360px] lg:justify-center gap-[60px] xl:gap-[180px] items-center"
+        style={{ fontFamily: HELV }}
+      >
         <div className="flex flex-col gap-[20px]">
           {FEATURES.map((f, i) => {
             const on = i === active;
@@ -895,17 +902,17 @@ function DeliverShowcase() {
                 key={f.t}
                 type="button"
                 onClick={() => setActive(i)}
-                className="text-left rounded-[20px] bg-white px-[30px] py-[30px] transition-all duration-500"
+                className="text-left rounded-[20px] bg-white px-[30px] py-[20px] transition-all duration-500"
                 style={{ border: `1px solid ${on ? BLUE : 'rgba(0,13,16,0.08)'}`, boxShadow: on ? '0 10px 30px rgba(0,157,220,0.12)' : 'none' }}
                 aria-pressed={on}
               >
                 <p className="text-[16px] leading-[20px] font-medium" style={{ color: on ? BLUE : '#8e8e95' }}>
                   0{i + 1}
                 </p>
-                <p className="mt-[10px] text-[24px] leading-[30px] font-bold transition-colors duration-500" style={{ color: on ? INK : '#8e8e95' }}>
+                <p className="mt-[10px] text-[22px] leading-[28px] font-bold transition-colors duration-500" style={{ color: on ? INK : '#8e8e95' }}>
                   {f.t}
                 </p>
-                <p className="mt-[10px] text-[18px] leading-[28px] transition-colors duration-500" style={{ color: on ? '#333' : '#a6a6ad' }}>
+                <p className="mt-[10px] text-[16px] leading-[26px] transition-colors duration-500" style={{ color: on ? '#333' : '#a6a6ad' }}>
                   {f.d}
                 </p>
                 <div className="mt-[20px] h-[4px] rounded-full bg-[#e6f4fa] overflow-hidden">
@@ -916,33 +923,36 @@ function DeliverShowcase() {
           })}
         </div>
 
-        {/* phone */}
-        <div className="mx-auto w-[340px] rounded-[60px] bg-black p-[12px] shadow-[0_30px_60px_rgba(0,13,16,0.25)]">
-          <div className="relative overflow-hidden rounded-[48px] bg-white" style={{ aspectRatio: '394 / 852' }}>
-            {FEATURES.map((f, i) => (
-              <video
-                key={f.v}
-                ref={(el) => {
-                  vids.current[i] = el;
-                }}
-                src={f.v}
-                poster={f.poster}
-                muted
-                playsInline
-                preload={i === 0 ? 'auto' : 'metadata'}
-                aria-label={f.label}
-                className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
-                style={{ opacity: i === active ? 1 : 0 }}
-                onTimeUpdate={(e) => {
-                  if (i === active && e.currentTarget.duration) setProg(e.currentTarget.currentTime / e.currentTarget.duration);
-                }}
-                onEnded={() => {
-                  if (i === active) setActive((active + 1) % FEATURES.length);
-                }}
-              />
-            ))}
+        {/* phone (360 wide) + caption */}
+        <figure className="mx-auto w-full max-w-[360px]">
+          <div className="rounded-[60px] bg-black p-[12px] shadow-[0_30px_60px_rgba(0,13,16,0.25)]">
+            <div className="relative overflow-hidden rounded-[48px] bg-white" style={{ aspectRatio: '394 / 852' }}>
+              {FEATURES.map((f, i) => (
+                <video
+                  key={f.v}
+                  ref={(el) => {
+                    vids.current[i] = el;
+                  }}
+                  src={f.v}
+                  poster={f.poster}
+                  muted
+                  playsInline
+                  preload={i === 0 ? 'auto' : 'metadata'}
+                  aria-label={f.label}
+                  className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
+                  style={{ opacity: i === active ? 1 : 0 }}
+                  onTimeUpdate={(e) => {
+                    if (i === active && e.currentTarget.duration) setProg(e.currentTarget.currentTime / e.currentTarget.duration);
+                  }}
+                  onEnded={() => {
+                    if (i === active) setActive((active + 1) % FEATURES.length);
+                  }}
+                />
+              ))}
+            </div>
           </div>
-        </div>
+          <figcaption className="mt-[20px] text-center text-[16px] leading-[1.4] text-[#8e8e95]">{FEATURES[active].caption}</figcaption>
+        </figure>
       </div>
     </div>
   );
@@ -1190,6 +1200,9 @@ function ReflectionSection() {
 
 /* ---------- page ---------- */
 
+// the GameCove card at the end opens the next case study (links live in src/site.ts)
+const NEXT_HREF = PROJECT_URLS['#/gamecove'];
+
 export function TrustBankCase({ onClose }: { onClose: () => void }) {
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -1202,8 +1215,7 @@ export function TrustBankCase({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="relative w-full min-h-screen bg-white overflow-x-clip" style={{ color: INK }}>
-      {/* next project is worked out inside CaseNav from the URL (Trust Bank -> GameCove) */}
-      <CaseNav onBack={onClose} next={{ name: 'GameCove', icon: ASSETS.gamecove, onGo: onClose }} />
+      <CaseHeader onClose={onClose} nextName="GameCove" />
       <main>
         <HeroSection />
         <OverviewSection />
@@ -1215,6 +1227,7 @@ export function TrustBankCase({ onClose }: { onClose: () => void }) {
         <TestSection />
         <ReflectionSection />
       </main>
+      <NextProjectCard name="GameCove" href={NEXT_HREF} />
     </div>
   );
 }
