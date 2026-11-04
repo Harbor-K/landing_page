@@ -836,10 +836,57 @@ const FEATURES = [
 ];
 
 /**
+ * Progress drawn along a card's rounded border: a blue line starts at the top-left corner
+ * and runs clockwise around the card as the feature's video plays (0 → 1).
+ */
+function ProgressBorder({ progress }: { progress: number }) {
+  const ref = useRef<SVGSVGElement>(null);
+  const [size, setSize] = useState({ w: 0, h: 0 });
+  useEffect(() => {
+    const card = ref.current?.parentElement;
+    if (!card) return;
+    const measure = () => setSize({ w: card.offsetWidth, h: card.offsetHeight });
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(card);
+    return () => ro.disconnect();
+  }, []);
+  const R = 19; // card corner 20, minus half the 2px line
+  const w = Math.max(0, size.w - 2);
+  const h = Math.max(0, size.h - 2);
+  const perimeter = 2 * (w + h) - 8 * R + 2 * Math.PI * R;
+  return (
+    <svg
+      ref={ref}
+      aria-hidden
+      className="pointer-events-none absolute"
+      style={{ top: -1, left: -1, width: size.w, height: size.h, overflow: 'visible' }}
+    >
+      {size.w > 0 && (
+        <rect
+          x={1}
+          y={1}
+          width={w}
+          height={h}
+          rx={R}
+          ry={R}
+          fill="none"
+          stroke={BLUE}
+          strokeWidth={2}
+          strokeDasharray={perimeter}
+          strokeDashoffset={perimeter * (1 - Math.min(1, Math.max(0, progress)))}
+          style={{ transition: 'stroke-dashoffset 0.3s linear' }}
+        />
+      )}
+    </svg>
+  );
+}
+
+/**
  * Deliver: 3 feature cards on the left, the phone plays that feature's screen recording on the right.
- * The active card's bar fills as its video plays; when it ends the next feature starts (3 → 1 loops).
+ * The active card's border fills (blue line around the card) as its video plays; when it ends the next feature starts (3 → 1 loops).
  * The block is pinned while you scroll through it, and scrolling also moves 1 → 2 → 3.
- * Sizes from Figma "Section / Deliver": cards 620 wide (20 apart, title 22, body 16), 180 gap, phone 360 wide with a caption under it.
+ * Sizes from Figma "Section / Deliver": cards 620 wide (20 apart, title 22, body 16, progress drawn on the card border), 180 gap, phone 360 wide with a caption under it.
  */
 function DeliverShowcase() {
   const outer = useRef<HTMLDivElement>(null);
@@ -902,10 +949,12 @@ function DeliverShowcase() {
                 key={f.t}
                 type="button"
                 onClick={() => setActive(i)}
-                className="text-left rounded-[20px] bg-white px-[30px] py-[20px] transition-all duration-500"
-                style={{ border: `1px solid ${on ? BLUE : 'rgba(0,13,16,0.08)'}`, boxShadow: on ? '0 10px 30px rgba(0,157,220,0.12)' : 'none' }}
+                className="relative text-left rounded-[20px] bg-white px-[30px] py-[20px] transition-all duration-500"
+                style={{ border: `1px solid ${on ? '#cfe9f5' : 'rgba(0,13,16,0.08)'}`, boxShadow: on ? '0 10px 30px rgba(0,157,220,0.12)' : 'none' }}
                 aria-pressed={on}
               >
+                {/* progress runs around the card border while its video plays */}
+                {on && <ProgressBorder progress={prog} />}
                 <p className="text-[16px] leading-[20px] font-medium" style={{ color: on ? BLUE : '#8e8e95' }}>
                   0{i + 1}
                 </p>
@@ -915,9 +964,6 @@ function DeliverShowcase() {
                 <p className="mt-[10px] text-[16px] leading-[26px] transition-colors duration-500" style={{ color: on ? '#333' : '#a6a6ad' }}>
                   {f.d}
                 </p>
-                <div className="mt-[20px] h-[4px] rounded-full bg-[#e6f4fa] overflow-hidden">
-                  <div className="h-full rounded-full" style={{ width: `${on ? prog * 100 : 0}%`, background: BLUE }} />
-                </div>
               </button>
             );
           })}
