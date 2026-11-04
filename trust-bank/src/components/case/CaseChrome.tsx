@@ -7,6 +7,7 @@ import { XIcon } from 'lucide-react';
  * and PageA NextProject), so every Trust Bank page looks alike.
  * Header: at the very top the close button and Next · GameCove sit on the 1440 container edges;
  * once you scroll they slide out to the screen edges with a 20px margin and stay there.
+ * Scrolling down tucks the whole header up out of view; scrolling up (or reaching the top) brings it back.
  * "Next · GameCove" scrolls down to the next-project card; the card opens the next case study.
  * Font: Helvetica Neue (the font-inter class is kept from the UX page but has no Inter here).
  */
@@ -21,7 +22,14 @@ export function CaseHeader({ onClose, nextName }: { onClose: () => void; nextNam
   const { scrollY } = useScroll();
   const [atTop, setAtTop] = useState(true);
   const [edge, setEdge] = useState(EDGE);
-  useMotionValueEvent(scrollY, 'change', (v) => setAtTop(v < 8));
+  const [hidden, setHidden] = useState(false);
+  useMotionValueEvent(scrollY, 'change', (v) => {
+    setAtTop(v < 8);
+    const prev = scrollY.getPrevious() ?? 0;
+    if (v < 80) setHidden(false); // near the top: always shown
+    else if (v > prev + 4) setHidden(true); // scrolling down: hide
+    else if (v < prev - 4) setHidden(false); // scrolling up: show
+  });
   useEffect(() => {
     const calc = () => setEdge(Math.max(EDGE, (window.innerWidth - CONTAINER) / 2));
     calc();
@@ -35,11 +43,11 @@ export function CaseHeader({ onClose, nextName }: { onClose: () => void; nextNam
     document.getElementById('next-project')?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
   };
   return (
-    <header className="pointer-events-none fixed inset-x-0 top-0 z-50" style={{ height: HEADER_H }}>
+    <header className="pointer-events-none fixed inset-x-0 top-0 z-50" style={{ height: HEADER_H }} onFocusCapture={() => setHidden(false)}>
       <motion.div
         className="flex h-full items-center justify-between"
-        animate={{ paddingLeft: pad, paddingRight: pad }}
-        transition={reduce ? { duration: 0 } : SPRING}
+        animate={{ paddingLeft: pad, paddingRight: pad, y: hidden ? -(HEADER_H + 20) : 0 }}
+        transition={reduce ? { duration: 0 } : { ...SPRING, y: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } }}
       >
         <button
           type="button"
