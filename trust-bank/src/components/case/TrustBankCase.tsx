@@ -1036,10 +1036,11 @@ function DeliverSection() {
 }
 
 /**
- * One fix, told the Corgi way: the phone sits in a panel that stays put while you scroll past it.
- * The first half of the scroll shows the As-is screen, the second half swaps it for To-be
- * (the As-is / To-be pill and the panel tint follow). Text sits beside the phone:
- * kicker, title and body at the top, the test number at the bottom.
+ * One fix, with the Corgi interaction: the phone panel stays pinned on the left while the text on the
+ * right scrolls past it in two steps. When the second step reaches the middle of the screen, the phone
+ * card flips over in 3D (As-is on the front, To-be on the back) and the panel colour changes with it;
+ * scrolling back up flips it back. The As-is / To-be pill follows.
+ * Right side: step 1 = kicker, title, body; step 2 = the test number.
  * Small screens: no pinning, both phones side by side under the text.
  */
 function FixBlock({
@@ -1063,18 +1064,18 @@ function FixBlock({
   after: string;
   alt: string;
 }) {
-  const runway = useRef<HTMLDivElement>(null);
+  const step2 = useRef<HTMLDivElement>(null);
   const [toBe, setToBe] = useState(false);
+  const [reduce, setReduce] = useState(false);
   useEffect(() => {
-    const el = runway.current;
-    if (!el) return;
+    setReduce(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     let raf = 0;
     const update = () => {
       raf = 0;
-      const r = el.getBoundingClientRect();
-      const span = Math.max(1, r.height - window.innerHeight);
-      const p = Math.min(1, Math.max(0, -r.top / span));
-      setToBe(p >= 0.5);
+      const el = step2.current;
+      if (!el) return;
+      // flip once the second text step's top passes the middle of the screen
+      setToBe(el.getBoundingClientRect().top < window.innerHeight * 0.55);
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
@@ -1088,6 +1089,9 @@ function FixBlock({
       window.removeEventListener('resize', onScroll);
     };
   }, []);
+
+  const PANEL = 'clamp(520px, 76vh, 680px)';
+  const flipT = reduce ? 'none' : 'transform 0.9s cubic-bezier(0.65, 0, 0.35, 1)';
 
   const textTop = (
     <div>
@@ -1114,7 +1118,7 @@ function FixBlock({
         return (
           <span
             key={l}
-            className="rounded-full px-4 py-[6px] transition-colors duration-300"
+            className="rounded-full px-4 py-[6px] transition-colors duration-500"
             style={{ background: on ? INK : 'transparent', color: on ? '#fff' : '#8e8e95' }}
           >
             {l}
@@ -1123,41 +1127,44 @@ function FixBlock({
       })}
     </div>
   );
+  const face = (src: string, label: string, back: boolean) => (
+    <img
+      src={src}
+      alt={`${alt} — ${label}`}
+      className="absolute inset-0 h-full w-full object-contain"
+      style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: back ? 'rotateY(180deg)' : undefined }}
+      loading="lazy"
+      decoding="async"
+    />
+  );
 
   return (
     <div style={{ fontFamily: HELV }}>
-      {/* md and up: pinned panel, As-is then To-be */}
-      <div ref={runway} className="relative hidden md:block" style={{ height: '200vh' }}>
-        <div className="sticky top-0 flex h-screen items-center">
-          <div className="grid w-full max-w-[1255px] grid-cols-[minmax(0,640px)_minmax(0,1fr)] gap-10 lg:gap-[100px]">
+      {/* md and up: pinned flip panel on the left, text scrolling past on the right */}
+      <div className="hidden md:grid max-w-[1255px] grid-cols-[minmax(0,640px)_minmax(0,1fr)] gap-10 lg:gap-[100px]">
+        <div className="relative">
+          <div className="sticky" style={{ top: `calc(50vh - ${PANEL} / 2)` }}>
             <div
-              className="relative flex items-end justify-center overflow-hidden rounded-[20px] transition-colors duration-500"
-              style={{ height: 'clamp(520px, 76vh, 680px)', background: toBe ? '#e3f3fa' : '#f2f2f4' }}
+              className="relative flex items-end justify-center overflow-hidden rounded-[20px] transition-colors duration-700"
+              style={{ height: PANEL, background: toBe ? '#e3f3fa' : '#f2f2f4', perspective: '1600px' }}
             >
               <div className="absolute left-5 top-5 z-10">{pill}</div>
-              <div className="relative h-[calc(100%-96px)] mb-0 translate-y-[24px]" style={{ aspectRatio: '600 / 1230' }}>
-                <img
-                  src={before}
-                  alt={`${alt} — as-is`}
-                  className="absolute inset-0 h-full w-full object-contain transition-opacity duration-500"
-                  style={{ opacity: toBe ? 0 : 1 }}
-                  loading="lazy"
-                  decoding="async"
-                />
-                <img
-                  src={after}
-                  alt={`${alt} — to-be`}
-                  className="absolute inset-0 h-full w-full object-contain transition-opacity duration-500"
-                  style={{ opacity: toBe ? 1 : 0 }}
-                  loading="lazy"
-                  decoding="async"
-                />
+              <div
+                className="relative h-[calc(100%-96px)] translate-y-[24px]"
+                style={{ aspectRatio: '600 / 1230', transformStyle: 'preserve-3d', transform: `rotateY(${toBe ? 180 : 0}deg)`, transition: flipT }}
+              >
+                {face(before, 'as-is', false)}
+                {face(after, 'to-be', true)}
               </div>
             </div>
-            <div className="flex flex-col justify-between py-2" style={{ height: 'clamp(520px, 76vh, 680px)' }}>
-              {textTop}
-              {textBottom}
-            </div>
+          </div>
+        </div>
+        <div>
+          <div className="flex flex-col justify-center" style={{ minHeight: '100vh' }}>
+            {textTop}
+          </div>
+          <div ref={step2} className="flex flex-col justify-center" style={{ minHeight: '100vh' }}>
+            {textBottom}
           </div>
         </div>
       </div>
@@ -1287,7 +1294,7 @@ function TestSection() {
               alt="Fix 1, LinkPoints screen"
             />
           </div>
-          <div className="mt-[100px] md:mt-0">
+          <div className="mt-[100px] md:mt-[40px]">
             <FixBlock
               kicker="Fix 3 + 4 · Rewards hub"
               title={
