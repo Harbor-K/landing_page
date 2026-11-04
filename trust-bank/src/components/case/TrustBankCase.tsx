@@ -17,6 +17,10 @@ import { AffinityScroll } from './AffinityScroll';
  */
 
 const A = 'https://raw.githubusercontent.com/Harbor-K/harbor-pf/main/assets/trust-bank/';
+// newer assets live in the landing_page repo (trust-bank/assets)
+const L = 'https://raw.githubusercontent.com/Harbor-K/landing_page/main/trust-bank/assets/';
+const PROTOTYPE_URL =
+  'https://www.figma.com/proto/8cWe2vvqXJcQ3vWBtNqxFe/%F0%9F%94%B5-Trust-Bank_Design?node-id=627-8762&p=f&viewport=-335%2C-955%2C0.14&t=OAe3UV92aMoOUQHu-1&scaling=scale-down&content-scaling=fixed&starting-point-node-id=627%3A8762&show-proto-sidebar=1&page-id=200%3A3608';
 const IMG = {
   logo: A + 'logo.svg',
   heroVideo: A + 'hero-sfx-v2.mp4',
@@ -51,8 +55,9 @@ const IMG = {
   deliver: A + 'deliver.png',
   deliver1: A + 'deliver-1.mp4',
   deliver1Poster: A + 'deliver-1-poster.jpg',
-  deliver2: A + 'deliver-2.mp4',
-  deliver2Poster: A + 'deliver-2-poster.jpg',
+  // feature 2: Harbor's GIF (widget added, then the one-page Rewards hub), as a silent MP4
+  deliver2: L + 'deliver-2-rewards.mp4',
+  deliver2Poster: L + 'deliver-2-rewards-poster.jpg',
   deliver3: A + 'deliver-3.mp4',
   deliver3Poster: A + 'deliver-3-poster.jpg',
   ut: A + 'ut-session.png',
@@ -816,7 +821,7 @@ const FEATURES = [
     d: 'Points, quests, coupons and stamps sit on one page. Trust+, the premium level, sat at the bottom in this version — testing moved it to the top.',
     v: IMG.deliver2,
     poster: IMG.deliver2Poster,
-    label: 'Adding the LinkPoints widget to the home screen',
+    label: 'Adding the LinkPoints widget, then the Rewards page with points, quests, coupons, stamps and Trust+ on one screen',
   },
   {
     t: 'Points you can see grow',
@@ -954,7 +959,16 @@ function DeliverSection() {
           3 features, 7 key screens
         </H2>
         <Body className="mt-4 max-w-[700px]">
-          Each feature solves one pain point. Features 1 and 2 make rewards easy to find. Feature 3 makes them easy to use. [ Try the clickable prototype ]
+          Each feature solves one pain point. Features 1 and 2 make rewards easy to find. Feature 3 makes them easy to use. [{' '}
+          <a
+            href={PROTOTYPE_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="underline decoration-[#000d10]/30 underline-offset-[3px] transition-colors duration-150 hover:decoration-[#000d10]"
+          >
+            Try the clickable prototype
+          </a>{' '}
+          ]
         </Body>
         <DeliverShowcase />
       </Container>
