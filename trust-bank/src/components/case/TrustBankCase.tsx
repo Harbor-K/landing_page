@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { CaseHeader, NextProjectCard } from './CaseChrome';
 import { PROJECT_URLS } from '../../site';
 import { AffinityScroll } from './AffinityScroll';
+import { TestTop } from './TestTop'; // Test › body, key numbers (count up on scroll), looping UT recording + task sheet
 import { FixBlock } from './FixBlock'; // Test › What we changed: pinned phone panel that flips As-is → To-be
 
 /**
@@ -61,7 +62,6 @@ const IMG = {
   deliver2Poster: L + 'deliver-2-rewards-poster.jpg',
   deliver3: A + 'deliver-3.mp4',
   deliver3Poster: A + 'deliver-3-poster.jpg',
-  ut: A + 'ut-session.png',
   // Fix screens from Figma "Sub-block_1" (What we changed after testing), one phone each so they can swap on scroll
   fix1Before: L + 'fix1-asis.webp',
   fix1After: L + 'fix1-tobe.webp',
@@ -1046,73 +1046,7 @@ function TestSection() {
           <br />
           finding points was the hardest part
         </H2>
-        <Body className="mt-4 max-w-[700px]">
-          6 users tried 5 everyday tasks. Then they rated how easy the app was with a SUS survey. 4 were general users and 2 worked in IT. All results are in [
-          one shared sheet ]
-        </Body>
-
-        {/* assumption → validated */}
-        <div className="mt-[30px] rounded-[20px] border border-[rgba(0,13,16,0.1)] bg-white px-6 md:px-[30px] py-[30px] grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 md:gap-8 items-center" style={{ fontFamily: HELV }}>
-          <div>
-            <p className="text-[13px] tracking-[0.08em] text-[#8e8e95]">OUR ASSUMPTION</p>
-            <p className="mt-2 text-[19px] md:text-[22px] leading-[1.4] font-medium text-[#000d10]">If Linkpoints are easier to reach, users will use Trust Bank more often.</p>
-          </div>
-          <span className="text-[28px] hidden md:block" style={{ color: BLUE }}>
-            →
-          </span>
-          <div>
-            <p className="text-[13px] tracking-[0.08em]" style={{ color: BLUE }}>
-              VALIDATED IN TESTING
-            </p>
-            <p className="mt-2 text-[19px] md:text-[22px] leading-[1.4] font-medium text-[#000d10]">
-              Easier access worked: 77% of tasks were done without help, and every user said they’d keep using it.
-            </p>
-          </div>
-        </div>
-
-        {/* key numbers */}
-        <div className="mt-[30px] grid grid-cols-1 sm:grid-cols-3 gap-8 px-[30px]" style={{ fontFamily: HELV }}>
-          <div>
-            <p className="text-[52px] leading-[1.1] font-bold" style={{ color: BLUE }}>
-              77%
-            </p>
-            <p className="mt-5 text-[17px] font-semibold text-[#000d10]">tasks done without help</p>
-          </div>
-          <div>
-            <p className="text-[52px] leading-[1.1] font-bold" style={{ color: BLUE }}>
-              85
-            </p>
-            <p className="mt-5 text-[17px] font-semibold text-[#000d10]">ease-of-use score (SUS)</p>
-            <p className="text-[17px] text-[#767676]">Out of 100 · A+ grade</p>
-            <div className="relative mt-4 h-[6px] max-w-[380px] rounded-full bg-[#e6eef1]">
-              <div className="absolute inset-y-0 left-0 rounded-full" style={{ width: '85%', backgroundColor: BLUE }} />
-              <div className="absolute -top-[5px] w-[2px] h-4 bg-[#000d10]" style={{ left: '68%' }} />
-            </div>
-            <div className="relative mt-2 max-w-[380px] text-[12px] text-[#767676] h-4">
-              <span className="absolute left-0">0</span>
-              <span className="absolute -translate-x-1/2" style={{ left: '68%' }}>
-                68 = average
-              </span>
-              <span className="absolute right-0">100</span>
-            </div>
-          </div>
-          <div>
-            <p className="text-[52px] leading-[1.1] font-bold" style={{ color: BLUE }}>
-              100%
-            </p>
-            <p className="mt-5 text-[17px] font-semibold text-[#000d10]">said they’d keep using it</p>
-          </div>
-        </div>
-
-        {/* masked usability-test session */}
-        <div className="relative mt-[40px] rounded-[20px] overflow-hidden">
-          <Img src={IMG.ut} alt="Remote usability test session on the prototype (participant masked)" />
-          <div
-            className="absolute backdrop-blur-xl bg-white/10 rounded-[6px]"
-            style={{ left: `${(1061 / 1440) * 100}%`, top: `${(355 / 610) * 100}%`, width: `${(182 / 1440) * 100}%`, height: `${(243 / 610) * 100}%` }}
-            aria-hidden="true"
-          />
-        </div>
+        <TestTop />
 
         {/* what we changed */}
         <div className="mt-[120px]">
