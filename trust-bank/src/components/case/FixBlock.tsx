@@ -18,6 +18,7 @@ function Body({ children, className = '', color = INK }: { children: React.React
  * card flips over in 3D (As-is on the front, To-be on the back) and the panel colour changes with it;
  * scrolling back up flips it back. The As-is / To-be pill follows.
  * Right side: step 1 = kicker, title, body; step 2 = the test number.
+ * The whole phone sits inside the panel with 30px below it.
  * Small screens: no pinning, both phones side by side under the text.
  */
 export function FixBlock({
@@ -122,12 +123,12 @@ export function FixBlock({
         <div className="relative">
           <div className="sticky" style={{ top: `calc(50vh - ${PANEL} / 2)` }}>
             <div
-              className="relative flex items-end justify-center overflow-hidden rounded-[20px] transition-colors duration-700"
+              className="relative flex items-end justify-center overflow-hidden rounded-[20px] pb-[30px] transition-colors duration-700"
               style={{ height: PANEL, background: toBe ? '#e3f3fa' : '#f2f2f4', perspective: '1600px' }}
             >
               <div className="absolute left-5 top-5 z-10">{pill}</div>
               <div
-                className="relative h-[calc(100%-96px)] translate-y-[24px]"
+                className="relative h-[calc(100%-120px)]"
                 style={{ aspectRatio: '600 / 1230', transformStyle: 'preserve-3d', transform: `rotateY(${toBe ? 180 : 0}deg)`, transition: flipT }}
               >
                 {face(before, 'as-is', false)}

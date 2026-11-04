@@ -14,6 +14,8 @@ const L = 'https://raw.githubusercontent.com/Harbor-K/landing_page/main/trust-ba
 const UT_VIDEO = L + 'ut-session.mp4';
 const UT_POSTER = L + 'ut-video-poster.jpg';
 const UT_SHEET = L + 'ut-sheet.png';
+// all usability-test results (Google Sheets, view-only link)
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1G1L7nXgh53dFV-mELPEmyCd28lPneIIXBH229eu950Q/edit?usp=sharing';
 
 const INK = '#000d10';
 const BLUE = '#009ddc';
@@ -79,7 +81,16 @@ export function TestTop() {
     <div style={{ fontFamily: HELV }}>
       <p className="mt-4 max-w-[700px] text-[17px] md:text-[18px] leading-[29px]" style={{ color: INK }}>
         Our assumption If Linkpoints are easier to reach, users will use Trust Bank more often. Validated in testing Easier access worked: 77% of tasks were
-        done without help, and every user said they’d keep using it. [ one shared sheet ]
+        done without help, and every user said they’d keep using it. [{' '}
+        <a
+          href={SHEET_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="underline decoration-[#000d10]/30 underline-offset-[3px] transition-colors duration-150 hover:decoration-[#000d10]"
+        >
+          one shared sheet
+        </a>{' '}
+        ]
       </p>
 
       {/* key numbers: count up on scroll */}
