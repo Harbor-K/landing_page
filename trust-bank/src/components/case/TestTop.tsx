@@ -10,8 +10,8 @@ import React, { useEffect, useRef, useState } from 'react';
  */
 
 const L = 'https://raw.githubusercontent.com/Harbor-K/landing_page/main/trust-bank/assets/';
-// Set to the recording (silent MP4) once it's in trust-bank/assets; until then the first frame shows.
-const UT_VIDEO = '';
+// the recording from Figma (node 1151:425), cropped to the 929 × 457 frame, silent, loops
+const UT_VIDEO = L + 'ut-session.mp4';
 const UT_POSTER = L + 'ut-video-poster.jpg';
 const UT_SHEET = L + 'ut-sheet.png';
 
