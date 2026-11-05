@@ -18,7 +18,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  PROJECTS: "trust-bank about-me"
+  PROJECTS: "trust-bank about-me gamecove"
 
 jobs:
   build:

@@ -7,7 +7,7 @@ copied from the "Harbor Kim Portfolio" Magic Patterns design.
 | --- | --- | --- |
 | `trust-bank/` | Trust Bank (Singapore) — rewards UX case study | done |
 | `about-me/` | About me — film-strip intro, career timeline, week chart, drawings, book a call | done |
-| `gamecove/` | GameCove | to do |
+| `gamecove/` | GameCove — AI analytics dashboard for first-time game creators | done (some pictures still slots) |
 | `utrada/` | UTrada | to do |
 | `eto-markets/` | ETO Markets | to do |
 
@@ -15,6 +15,7 @@ copied from the "Harbor Kim Portfolio" Magic Patterns design.
 
 - Trust Bank: https://harbor-k.github.io/landing_page/trust-bank/
 - About me: https://harbor-k.github.io/landing_page/about-me/
+- GameCove: https://harbor-k.github.io/landing_page/gamecove/
 
 Every push to `main` rebuilds the pages (`.github/workflows/deploy-pages.yml`).
 One-time setup: repo **Settings → Pages → Source: GitHub Actions**.
